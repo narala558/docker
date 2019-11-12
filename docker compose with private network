@@ -1,0 +1,112 @@
+version: '3'
+services:
+  solr1:
+    container_name: solr1
+    image: solr:6.6.0
+    ports:
+     - "8981:8983"
+    volumes:
+      - /home/vasa/Desktop/Project/EIS:/var/solr/data/
+      - /var/solr/data/competitorNews/conf:/var/solr/data/competitorNews/conf
+      - /home/vasa/Desktop/Project/EIS/middleware/solr-6.6.0/contrib:/opt/solr/contrib
+      - /home/vasa/Desktop/Project/EIS/middleware/solr-6.6.0/dist:/opt/solr/dist
+    environment:
+      - ZK_HOST=zoo1:2181,zoo2:2181,zoo3:2181
+    networks:
+       private_net:
+           ipv4_address: 172.40.1.4
+    depends_on:
+      - zoo1
+      - zoo2
+      - zoo3
+
+  solr2:
+    image: solr:6.6.0
+    container_name: solr2
+    ports:
+     - "8982:8983"
+    volumes:
+      - /home/vasa/Desktop/Project/EIS:/var/solr/data/
+      - /var/solr/data/competitorNews/conf:/var/solr/data/competitorNews/conf 
+      - /home/vasa/Desktop/Project/EIS/middleware/solr-6.6.0/contrib:/opt/solr/contrib
+      - /home/vasa/Desktop/Project/EIS/middleware/solr-6.6.0/dist:/opt/solr/dist
+    environment:
+      - ZK_HOST=zoo1:2181,zoo2:2181,zoo3:2181
+    networks:
+       private_net:
+           ipv4_address: 172.40.1.5
+    depends_on:
+      - zoo1
+      - zoo2
+      - zoo3
+
+  solr3:
+    image: solr:6.6.0
+    container_name: solr3
+    ports:
+     - "8983:8983"
+    volumes:
+      - /home/vasa/Desktop/Project/EIS:/var/solr/data/
+      - /var/solr/data/competitorNews/conf:/var/solr/data/competitorNews/conf 
+      - /home/vasa/Desktop/Project/EIS/middleware/solr-6.6.0/contrib:/opt/solr/contrib
+      - /home/vasa/Desktop/Project/EIS/middleware/solr-6.6.0/dist:/opt/solr/dist
+    environment:
+      - ZK_HOST=zoo1:2181,zoo2:2181,zoo3:2181
+    ports:
+      - 8983:8983
+    networks:
+       private_net:
+           ipv4_address: 172.40.1.6
+    depends_on:
+      - zoo1
+      - zoo2
+      - zoo3
+
+  zoo1:
+    image: zookeeper:3.4
+    container_name: zoo1
+    restart: always
+    hostname: zoo1
+    ports:
+      - 2181:2181
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zoo1:2888:3888 server.2=zoo2:2888:3888 server.3=zoo3:2888:3888
+    networks:
+       private_net:
+           ipv4_address: 172.40.1.7
+
+  zoo2:
+    image: zookeeper:3.4
+    container_name: zoo2
+    restart: always
+    hostname: zoo2
+    ports:
+      - 2182:2181
+    environment:
+      ZOO_MY_ID: 2
+      ZOO_SERVERS: server.1=zoo1:2888:3888 server.2=zoo2:2888:3888 server.3=zoo3:2888:3888
+    networks:
+       private_net:
+           ipv4_address: 172.40.1.8
+
+  zoo3:
+    image: zookeeper:3.4
+    container_name: zoo3
+    restart: always
+    hostname: zoo3
+    ports:
+      - 2183:2181
+    environment:
+      ZOO_MY_ID: 3
+      ZOO_SERVERS: server.1=zoo1:2888:3888 server.2=zoo2:2888:3888 server.3=zoo3:2888:3888
+    networks:
+       private_net:
+           ipv4_address: 172.40.1.9
+
+networks:
+    private_net:
+        ipam:
+            driver: default
+            config:
+                - subnet: 172.40.1.0/16
